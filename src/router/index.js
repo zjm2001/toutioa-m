@@ -12,7 +12,8 @@ const routes = [
       { path: '/my', component: () => import('@/views/my') },
       { path: '/video', component: () => import('@/views/video') }
     ]
-  }
+  },
+  { path: '/search', component: () => import('@/views/search') }
 ]
 
 const router = new VueRouter({

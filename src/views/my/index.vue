@@ -176,7 +176,6 @@ export default {
   }
 }
 .grid-nav{
-  margin-bottom: 10px;
   .grid-item{
     height: 141px;
     i.toutiao{

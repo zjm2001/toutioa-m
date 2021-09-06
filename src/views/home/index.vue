@@ -1,7 +1,7 @@
 <template>
 <div class="home-container">
   <van-nav-bar  class="page-nav-bar" fixed>
-   <van-button slot="title" type="info" size="small" icon="search" round class="search-btn" > 搜索</van-button>
+   <van-button slot="title" type="info" size="small" icon="search" round class="search-btn" to="/search"> 搜索</van-button>
   </van-nav-bar>
 <!--  tab频道列表-->
   <van-tabs v-model="active"  animated swipeable class="channel-tabs">
@@ -9,26 +9,41 @@
       <article-list :channel="channel"></article-list>
     </van-tab>
     <div slot="nav-right" class="null"></div>
-    <div slot="nav-right" class="hamburger-btn">
+    <div slot="nav-right" class="hamburger-btn" @click="isEditshow=true">
       <i class='toutiao toutiao-gengduo'></i>
     </div>
   </van-tabs>
+<!--  弹出层-->
+  <van-popup
+    v-model="isEditshow"
+    closeable
+    position="bottom"
+    close-icon-position="top-left"
+    :style="{ height: '100%' }">
+<!--    插入弹出层组件-->
+    <channel-edit :my-channels="channels" :active="active" @update-active="onUpdata"></channel-edit>
+  </van-popup>
 </div>
 </template>
 
 <script>
 import { getUserChannels } from '@/api/user'
 import ArticleList from './components/article-list'
+import ChannelEdit from './components/channel-edit'
+import { mapState } from 'vuex'
+import { getItem } from '@/utils/storage'
 
 export default {
   name: 'home',
   components: {
-    ArticleList
+    ArticleList,
+    ChannelEdit
   },
   data () {
     return {
       active: 0,
-      channels: [] // 频道列表
+      channels: [], // 频道列表
+      isEditshow: false // 控制弹出层出现
     }
   },
   created () {
@@ -38,13 +53,34 @@ export default {
     // 获取文章列表
     async loadChannels () {
       try {
-        const { data } = await getUserChannels()
-        // console.log(data)
-        this.channels = data.data.channels
+        // const { data } = await getUserChannels()
+        // // console.log(data)
+        // this.channels = data.data.channels
+        let channels = []
+        if (this.user) {
+          const { data } = await getUserChannels()
+          channels = data.data.channels
+        } else {
+          const localChannels = getItem('TOUTIAO_CHANEELS')
+          if (localChannels) {
+            channels = localChannels
+          } else {
+            const { data } = await getUserChannels()
+            channels = data.data.channels
+          }
+        }
+        this.channels = channels
       } catch (err) {
         this.$toast('获取频道数据失败')
       }
+    },
+    onUpdata (index, isEditshow = true) {
+      this.active = index
+      this.isEditshow = isEditshow
     }
+  },
+  computed: {
+    ...mapState(['user'])
   }
 
 }
