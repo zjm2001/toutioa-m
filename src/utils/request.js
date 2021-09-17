@@ -4,6 +4,7 @@ import store from '@/store'
 
 const request = axios.create({
   baseURL: 'http://ttapi.research.itcast.cn/' // 接口基础路径
+  // baseURL: 'http://localhost:9999'
 })
 
 // 请求拦截器

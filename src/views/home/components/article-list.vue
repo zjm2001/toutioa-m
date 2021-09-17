@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { getArticles } from '@/api/artivle'
+import { getArticles } from '@/api/article'
 import ArticleItem from '@/components/article-item'
 export default {
   name: 'article-list',
